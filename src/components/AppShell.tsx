@@ -1,16 +1,18 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, ListChecks, Map, Briefcase, NotebookPen, Flame, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 
-const nav = [
+type NavItem = { to: string; label: string; icon: ComponentType<{ className?: string }>; exact?: boolean };
+
+const nav: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/tasks", label: "Daily Tasks", icon: ListChecks },
   { to: "/roadmaps", label: "Roadmaps", icon: Map },
   { to: "/jobs", label: "Job Tracker", icon: Briefcase },
   { to: "/notes", label: "Notes", icon: NotebookPen },
-] as const;
+];
 
-export function AppShell() {
+export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -19,7 +21,6 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
-      {/* Mobile top bar */}
       <header className="md:hidden glass-strong sticky top-0 z-40 flex items-center justify-between px-4 h-14 border-b">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <Flame className="h-5 w-5 text-primary" />
@@ -34,11 +35,10 @@ export function AppShell() {
         </button>
       </header>
 
-      {/* Sidebar */}
       <aside
         className={`${mobileOpen ? "block" : "hidden"} md:block md:sticky md:top-0 md:h-screen md:w-64 shrink-0 z-30`}
       >
-        <div className="glass-strong md:h-full md:rounded-none rounded-none border-r p-4 flex flex-col gap-2">
+        <div className="glass-strong md:h-full border-r p-4 flex flex-col gap-2">
           <div className="hidden md:flex items-center gap-2 px-2 py-3 mb-2">
             <div className="h-9 w-9 rounded-xl ember-bg flex items-center justify-center shadow-[var(--shadow-glow)]">
               <Flame className="h-5 w-5 text-white" />
@@ -77,7 +77,7 @@ export function AppShell() {
       </aside>
 
       <main className="flex-1 min-w-0 px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full">
-        <Outlet />
+        {children}
       </main>
     </div>
   );
